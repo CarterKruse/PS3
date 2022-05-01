@@ -8,15 +8,18 @@
  */
 public class CharacterFrequency implements Comparable<CharacterFrequency>
 {
+    // Instance Variables
     private Character character;
     private Integer frequency;
 
+    // Constructor
     public CharacterFrequency(Character character, Integer frequency)
     {
         this.character = character;
         this.frequency = frequency;
     }
 
+    // Getter Functions/Methods
     public Character getCharacter()
     {
         return character;
