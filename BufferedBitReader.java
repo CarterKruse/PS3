@@ -1,54 +1,56 @@
 import java.io.*;
 
 /**
- * Reads bits from a file, one at a time.
- * Assumes that the last byte of the file contains the number of
- * valid bits in the previous byte.
+ * Reads bits from a file, one at a time. Assumes that the last byte of the file contains the number of valid bits in
+ * the previous byte.
+ *
+ * Throws an exception when EOF, with hasNext() method to test before reading (or could try/catch).
  *
  * @author Scot Drysdale
- * @author Chris Bailey-Kellogg, Spring 2016, now returns a boolean instead of an int;
- * throws an exception when EOF, with hasNext() method to test before reading (or could try/catch)
+ * @author Chris Bailey-Kellogg, Spring 2016 (Now returns a boolean instead of an int).
+ * @author Carter Kruse & John DeForest, Dartmouth CS 10, Spring 2022
  */
 public class BufferedBitReader
 {
-    // Note that we need to look ahead 3 bytes, because when the
-    // third byte is -1 (EOF indicator) then the second byte is a count
-    // of the number of valid bits in the first byte.
+    /* Note that we need to look ahead 3 bytes, because when the third byte is -1 (EOF indicator) then the second
+    byte is a count of the number of valid bits in the first byte.
+     */
 
-    int current;    // Current byte being returned, bit by bit
-    int next;       // Next byte to be returned (could be a count)
-    int afterNext;  // Byte two after the current byte
-    int bitMask;    // Shows which bit to return
+    int current; // Current byte being returned, bit by bit.
+    int next; // Next byte to be returned, which could be a count.
+    int afterNext; // Byte two after the current byte.
+    int bitMask; // Shows which bit to return.
 
     BufferedInputStream input;
 
     /**
-     * Constructor
+     * Constructor - Takes in the path name of the file to open.
      *
-     * @param pathName the path name of the file to open
-     * @throws IOException
+     * @param pathName The path name of the file to open.
      */
     public BufferedBitReader(String pathName) throws IOException
     {
         input = new BufferedInputStream(new FileInputStream(pathName));
 
         current = input.read();
+
         if (current == -1)
-            throw new EOFException("File did not have two bytes");
+            throw new EOFException("File did not have two bytes.");
 
         next = input.read();
+
         if (next == -1)
-            throw new EOFException("File did not have two bytes");
+            throw new EOFException("File did not have two bytes.");
 
         afterNext = input.read();
-        bitMask = 128;   // a 1 in leftmost bit position
+        bitMask = 128; // A 1 in leftmost bit position.
     }
 
     /**
-     * Test to decide whether or not to read the next bit.
-     * Input loop: while (reader.hasNext()) { boolean bit = reader.readBit(); }
+     * Test to decide whether to read the next bit.
+     * Input Loop: while (reader.hasNext()) { boolean bit = reader.readBit(); }
      *
-     * @return whether or not there remains a bit to get (else it's end of file, EOF)
+     * @return Whether there remains a bit to get (else it's end of file, EOF).
      */
     public boolean hasNext()
     {
@@ -57,62 +59,57 @@ public class BufferedBitReader
 
     /**
      * Reads a bit and returns it as a false or a true.
-     * Throws an exception if there isn't one, so use hasNext() to check first,
-     * or else catch the EOFException
+     * Throws an exception if there isn't one, so use hasNext() to check first, or else catch the EOFException.
      *
-     * @return the bit read
-     * @throws IOException
+     * @return The bit read.
      */
     public boolean readBit() throws IOException
     {
-        boolean returnBit;   // Hold the bit to return
+        boolean returnBit; // Hold the bit to return.
 
-        if (afterNext == -1)  // Are we emptying the last byte?
+        if (afterNext == -1) // Are we emptying the last byte?
+        {
+            // When afterNext == -1... next is the count of bits remaining.
 
-            // When afterNext == -1, next is the count of bits remaining.
+            if (next == 0) // No more bits in the final byte to return.
+            {
+                throw new EOFException("No more bits.");
+            }
 
-            if (next == 0)   // No more bits in the final byte to return
-                throw new EOFException("No more bits");
             else
             {
-                if ((bitMask & current) == 0)
-                    returnBit = false;
-                else
-                    returnBit = true;
+                returnBit = (bitMask & current) != 0;
 
-                next--;          // One fewer bit to return
-                bitMask = bitMask >> 1;    // Shift to mask next bit
+                next -= 1; // One fewer bit to return.
+                bitMask = bitMask >> 1; // Shift to mask next bit.
                 return returnBit;
             }
+        }
+
         else
         {
-            if ((bitMask & current) == 0)
-                returnBit = false;
-            else
-                returnBit = true;
+            returnBit = (bitMask & current) != 0;
 
-            bitMask = bitMask >> 1;    // Shift to mask next bit
+            bitMask = bitMask >> 1; // Shift to mask next bit.
 
+            // Finished returning this byte?
             if (bitMask == 0)
-            {        // Finished returning this byte?
-                bitMask = 128;           // Leftmost bit next
+            {
+                bitMask = 128; // Leftmost bit next
                 current = next;
                 next = afterNext;
                 afterNext = input.read();
             }
+
             return returnBit;
         }
     }
 
     /**
      * Close this bitReader.
-     *
-     * @throws IOException
      */
     public void close() throws IOException
     {
         input.close();
     }
-
-
 }
