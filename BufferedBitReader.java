@@ -1,6 +1,7 @@
 import java.io.*;
 
 /**
+ * Buffered Bit Reader
  * Reads bits from a file, one at a time. Assumes that the last byte of the file contains the number of valid bits in
  * the previous byte.
  *

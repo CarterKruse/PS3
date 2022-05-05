@@ -4,6 +4,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 /**
+ * Buffered Bit Writer
  * Writes bits to a file. Accumulates bits until it gets a byte, then writes it. On closing, writes an additional byte
  * holding the number of valid bits in the final byte written.
  *

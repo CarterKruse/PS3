@@ -1,18 +1,24 @@
 /**
  * Character Frequency
- *
  * A class that holds the data used for Huffman encoding. As a tree node has only one item of data, this class stores
  * a character and a frequency (key-value pair).
  *
  * This class is the data type for the tree. Accessor methods are provided as needed.
+ *
+ * @author Carter Kruse & John DeForest, Dartmouth CS 10, Spring 2022
  */
-public class CharacterFrequency implements Comparable<CharacterFrequency>
+
+public class CharacterFrequency
 {
-    // Instance Variables
+    // Instance Variables - A character and its frequency.
     private Character character;
     private Integer frequency;
 
-    // Constructor
+    /**
+     * Constructor - Assigns parameters to instance variables of the class.
+     * @param character The character to store.
+     * @param frequency The frequency of the character.
+     */
     public CharacterFrequency(Character character, Integer frequency)
     {
         this.character = character;
@@ -30,14 +36,18 @@ public class CharacterFrequency implements Comparable<CharacterFrequency>
         return frequency;
     }
 
-    // The compareTo() method is overwritten to allow for comparison based on frequency values.
-    @Override
-    public int compareTo(CharacterFrequency data)
+    // Setter Functions/Methods
+    public void setCharacter(Character character)
     {
-        return frequency - data.frequency;
+        this.character = character;
     }
 
-    // The toString() method is overwritten to print out the character and frequency of the key:value pair.
+    public void setFrequency(Integer frequency)
+    {
+        this.frequency = frequency;
+    }
+
+    // The toString() method is overwritten to print out the character and frequency of the key: value pair.
     @Override
     public String toString()
     {
